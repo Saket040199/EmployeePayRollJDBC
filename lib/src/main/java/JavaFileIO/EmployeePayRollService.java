@@ -10,6 +10,7 @@ public class EmployeePayRollService {
 	
 	private List<EmployeePayRoll> employeePayrollList;
 	
+	
 	public EmployeePayRollService(List<EmployeePayRoll> employeePayrollList) {
 		this.employeePayrollList=employeePayrollList;
 	}
@@ -43,8 +44,27 @@ public class EmployeePayRollService {
 
 	public List<EmployeePayRoll> readEmployeePayrollData(IOService ioService) {
 	if(ioService.equals(IOService.DB_IO))
-		this.employeePayrollList=new EmployeePayRollDBService().readData();
+		this.employeePayrollList=EmployeePayRollDBService.getInstance().readData();
 		return this.employeePayrollList;
+	}
+
+	public void updateEmployeeSalary(String name, double salary) {
+		int result=EmployeePayRollDBService.getInstance().updateEmployeeData(name,salary);
+	    if(result==0) return;
+	    EmployeePayRoll employeePayRoll=this.getEmployeePayroll(name);
+	    if (employeePayRoll !=null) employeePayRoll.salary=salary;
+	}
+
+	private EmployeePayRoll getEmployeePayroll(String name) {
+		return this.employeePayrollList.stream()
+				    .filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name))
+				    .findFirst()
+				    .orElse(null);
+	}
+
+	public boolean checkEmployeePayrollInSyncWithDB(String name) {
+		List<EmployeePayRoll> employeePayRolls= EmployeePayRollDBService.getInstance().getEmployeePayrollData(name);
+		return employeePayRolls.get(0).equals(getEmployeePayroll(name));
 	}
 	
 }
