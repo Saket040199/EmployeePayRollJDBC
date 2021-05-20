@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -122,5 +124,23 @@ public class EmployeePayRollDBService {
 			e.printStackTrace();
 		}
 		return employeePayRollList;
+	}
+
+	public Map<String, Double> getAverageSalaryByGender() {
+		String sql="select gender, AVG(salary) as avg_salary from employee_payroll group by gender;";
+		Map<String, Double> genderToAverageSalaryMap = new HashMap<>();
+		try (Connection connection=this.getConnection()){
+			
+			Statement statement=connection.createStatement();
+			ResultSet resultset=statement.executeQuery(sql);
+		    while(resultset.next()) {
+		    	String gender = resultset.getString("gender");
+		    	double salary = resultset.getDouble("avg_salary");
+		    	genderToAverageSalaryMap.put(gender, salary);
+		    }
+		}catch (SQLException e) {
+		    	e.printStackTrace();
+		    }
+		return genderToAverageSalaryMap;
 	}
 }

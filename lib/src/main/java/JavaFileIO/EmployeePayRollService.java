@@ -3,6 +3,7 @@ package JavaFileIO;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeePayRollService {
@@ -74,6 +75,13 @@ public class EmployeePayRollService {
 			
 	     return employeePayRollDBService.getEmployeeForDateRange(startDate,endDate);
 		}return null;	
+	}
+
+	public Map<String, Double> readAverageSalaryByGender(IOService ioService) {
+		if(ioService.equals(IOService.DB_IO)) {
+			return employeePayRollDBService.getAverageSalaryByGender();
+		}
+		return null;
 	}
 	
 }
