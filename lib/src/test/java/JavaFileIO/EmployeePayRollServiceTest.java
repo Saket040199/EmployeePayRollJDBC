@@ -1,5 +1,6 @@
 package JavaFileIO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Assert;
@@ -26,9 +27,23 @@ public class EmployeePayRollServiceTest {
 	public void givenNewSalaryforEmplyee_WhenUpdated_ShouldSyncWithDB() {
 		EmployeePayRollService employeePayrollService=new EmployeePayRollService();
 		List<EmployeePayRoll> employeePayrollData = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		employeePayrollService.updateEmployeeSalary("Farzan",3000000.00);
-		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Farzan");
+		employeePayrollService.updateEmployeeSalary("Terisa",3000000.00);
+		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
 		
 		Assert.assertTrue(result);
+	}
+	
+	@Test
+	public void givenDateAsInput_WhenExecuted_ShouldReturnNumberOfEmployees() {
+		EmployeePayRollService employeePayrollService=new EmployeePayRollService();
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		LocalDate startDate= LocalDate.of(2021, 01, 01);
+		LocalDate endDate= LocalDate.now();
+		List<EmployeePayRoll> employeePayrollData = 
+				employeePayrollService.readEmployeePayrollDataForDateRange(IOService.DB_IO, startDate,endDate);
+		 Assert.assertEquals(3,employeePayrollData.size());
+		
+		
+		
 	}
 }

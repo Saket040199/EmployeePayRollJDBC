@@ -1,5 +1,6 @@
 package JavaFileIO;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -9,21 +10,21 @@ public class EmployeePayRollService {
 	public enum IOService {CONSOLE_IO,FILE_IO,DB_IO,REST_IO}
 	
 	private List<EmployeePayRoll> employeePayrollList;
-	
-	
-	public EmployeePayRollService(List<EmployeePayRoll> employeePayrollList) {
-		this.employeePayrollList=employeePayrollList;
-	}
+	private EmployeePayRollDBService employeePayRollDBService;
 	
 	public EmployeePayRollService() {
-		this.employeePayrollList=employeePayrollList;
-		// TODO Auto-generated constructor stub
+		employeePayRollDBService=EmployeePayRollDBService.getInstance();
 	}
-
+	
+	public EmployeePayRollService(List<EmployeePayRoll> employeePayrollList) {
+		this();
+		this.employeePayrollList=employeePayrollList;
+	}
+	
 	public void read(Scanner sc) {
 		System.out.println("Employee ID ");
 		Integer id=sc.nextInt();
-		System.err.println("Employee name ");
+		System.out.println("Employee name ");
 		String name=sc.nextLine();
 		System.out.println("Employee Salary");
 		Double salary=sc.nextDouble();
@@ -44,12 +45,12 @@ public class EmployeePayRollService {
 
 	public List<EmployeePayRoll> readEmployeePayrollData(IOService ioService) {
 	if(ioService.equals(IOService.DB_IO))
-		this.employeePayrollList=EmployeePayRollDBService.getInstance().readData();
+		this.employeePayrollList=employeePayRollDBService.readData();
 		return this.employeePayrollList;
 	}
 
 	public void updateEmployeeSalary(String name, double salary) {
-		int result=EmployeePayRollDBService.getInstance().updateEmployeeData(name,salary);
+		int result=employeePayRollDBService.updateEmployeeData(name,salary);
 	    if(result==0) return;
 	    EmployeePayRoll employeePayRoll=this.getEmployeePayroll(name);
 	    if (employeePayRoll !=null) employeePayRoll.salary=salary;
@@ -63,8 +64,16 @@ public class EmployeePayRollService {
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
-		List<EmployeePayRoll> employeePayRolls= EmployeePayRollDBService.getInstance().getEmployeePayrollData(name);
+		List<EmployeePayRoll> employeePayRolls= employeePayRollDBService.getEmployeePayrollData(name);
 		return employeePayRolls.get(0).equals(getEmployeePayroll(name));
+	}
+
+	public List<EmployeePayRoll> readEmployeePayrollDataForDateRange(IOService ioService, LocalDate startDate,
+			LocalDate endDate) {
+		if(ioService.equals(IOService.DB_IO)) {
+			
+	     return employeePayRollDBService.getEmployeeForDateRange(startDate,endDate);
+		}return null;	
 	}
 	
 }

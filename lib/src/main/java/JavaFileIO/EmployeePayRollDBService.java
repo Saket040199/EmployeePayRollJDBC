@@ -1,6 +1,7 @@
 package JavaFileIO;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,23 +30,7 @@ public class EmployeePayRollDBService {
 	
 	public List<EmployeePayRoll> readData(){
 		String sql="select * from employee_payroll;";
-		List<EmployeePayRoll> employeePayRollList= new ArrayList<>();
-		try {
-			Connection connection=this.getConnection();
-			Statement statement=connection.createStatement();
-			ResultSet resultset=statement.executeQuery(sql);
-			while(resultset.next()) {
-				int id= resultset.getInt("id");
-				String name=resultset.getString("name");
-				double salary=resultset.getDouble("salary");
-				LocalDate startDate=resultset.getDate("startDate").toLocalDate();
-				employeePayRollList.add(new EmployeePayRoll(id, name, salary,startDate));
-			}
-			connection.close();
-		}catch(SQLException e) {
-			e.printStackTrace();
-		}
-		return employeePayRollList;
+		return this.getEmployeePayRollUsingDB(sql);
 	}
 
 	private Connection getConnection() throws SQLException {
@@ -64,7 +49,7 @@ public class EmployeePayRollDBService {
 		return this.updtaeEmployeeDataUsingStatement(name, salary);
 	}
 
-	private int updtaeEmployeeDataUsingStatement(String name, double salary) {
+	public int updtaeEmployeeDataUsingStatement(String name, double salary) {
 		String sql=String.format("update employee_payroll set salary =%.2f where name ='&s';", salary, name);
 		try(Connection connection =this.getConnection()){
 			Statement statement=connection.createStatement();
@@ -117,5 +102,25 @@ public class EmployeePayRollDBService {
 	 	}catch(SQLException e) {
 	 		e.printStackTrace();
 	 	}
+	}
+
+	public List<EmployeePayRoll> getEmployeeForDateRange(LocalDate startDate, LocalDate endDate) {
+		String sql=String.format("Select * from employee_payroll where startdate between '%s' and '%s';", Date.valueOf(startDate),Date.valueOf(endDate));
+		return this.getEmployeePayRollUsingDB(sql);
+		
+	}
+
+	private List<EmployeePayRoll> getEmployeePayRollUsingDB(String sql) {
+		List<EmployeePayRoll> employeePayRollList= new ArrayList<>();
+		try {
+			Connection connection=this.getConnection();
+			Statement statement=connection.createStatement();
+			ResultSet resultset=statement.executeQuery(sql);
+			employeePayRollList=this.getEmployeePayrollData(resultset);
+			connection.close();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayRollList;
 	}
 }
