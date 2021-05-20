@@ -9,14 +9,10 @@ import org.junit.Test;
 
 import JavaFileIO.EmployeePayRollService.IOService;
 
-
-
-
-
 public class EmployeePayRollServiceTest {
 
 	
-/*
+
 	@Test
 	public void givenEmployeePayroolInDB_ShouldMatchThreeCount() {
 		EmployeePayRollService employeePayrollService=new EmployeePayRollService();
@@ -47,14 +43,26 @@ public class EmployeePayRollServiceTest {
 		 Assert.assertEquals(3,employeePayrollData.size());
 				
 	}
-	*/
-	@SuppressWarnings("unlikely-arg-type")
+	
+	
 	@Test
 	public void givenPayrollData_WhenAverageRetrievedByGender_ShouldReturnProperValue() {
 		EmployeePayRollService employeePayrollService=new EmployeePayRollService();
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		Map<String, Double> averageSalaryByGender = employeePayrollService.readAverageSalaryByGender(IOService.DB_IO);
-		Assert.assertTrue(averageSalaryByGender.get("M").equals(3500000) && averageSalaryByGender.get("F").equals(4000000) );
+		Assert.assertTrue(averageSalaryByGender.get("M").equals(3500000.00) && 
+				          averageSalaryByGender.get("F").equals(4000000.00) );
 		
 	}
+	
+	@Test
+	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() {
+		EmployeePayRollService employeePayrollService=new EmployeePayRollService();
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.addEmployeeToPayRoll("Mark",5000000.00,LocalDate.now(),"M");
+		boolean result= employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		Assert.assertTrue(result);
+	}
+	
+	
 }

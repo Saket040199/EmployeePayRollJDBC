@@ -83,5 +83,11 @@ public class EmployeePayRollService {
 		}
 		return null;
 	}
+
+	public void addEmployeeToPayRoll(String name, double salary, LocalDate startDate, String gender) {
+		employeePayrollList.add(employeePayRollDBService.addEmployeeToPayRoll(name,salary,startDate,gender));
+		
+		
+	}
 	
 }
