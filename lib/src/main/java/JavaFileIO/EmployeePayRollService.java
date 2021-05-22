@@ -19,7 +19,7 @@ public class EmployeePayRollService {
 	
 	public EmployeePayRollService(List<EmployeePayRoll> employeePayrollList) {
 		this();
-		this.employeePayrollList=employeePayrollList;
+		this.employeePayrollList= new ArrayList<>(employeePayrollList);
 	}
 	
 	public void read(Scanner sc) {
@@ -86,8 +86,11 @@ public class EmployeePayRollService {
 
 	public void addEmployeeToPayRoll(String name, double salary, LocalDate startDate, String gender) {
 		employeePayrollList.add(employeePayRollDBService.addEmployeeToPayRoll(name,salary,startDate,gender));
-		
-		
+			
+	}
+
+	public long countEntries(IOService ioService) {
+		return employeePayrollList.size();
 	}
 	
 }

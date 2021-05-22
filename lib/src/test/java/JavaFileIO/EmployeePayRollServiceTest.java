@@ -1,19 +1,26 @@
 package JavaFileIO;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
+
 import JavaFileIO.EmployeePayRollService.IOService;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
 public class EmployeePayRollServiceTest {
 
 	
 
-	@Test
+/*	@Test
 	public void givenEmployeePayroolInDB_ShouldMatchThreeCount() {
 		EmployeePayRollService employeePayrollService=new EmployeePayRollService();
 	    List<EmployeePayRoll> employeePayrollData = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
@@ -62,6 +69,30 @@ public class EmployeePayRollServiceTest {
 		employeePayrollService.addEmployeeToPayRoll("Mark",5000000.00,LocalDate.now(),"M");
 		boolean result= employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		Assert.assertTrue(result);
+	}
+	
+	*/
+	@Before
+	public void setup() {
+		RestAssured.baseURI = "http://localhost";
+		RestAssured.port = 3000;
+		
+	}
+	
+	@Test
+	public void givenEmployeeDataInJsonServer_WhenRetrieved_ShouldMatchCount() {
+		EmployeePayRoll[] arrayOfEmps = getEmployeeList();
+		EmployeePayRollService employeePayRollService;
+		employeePayRollService = new EmployeePayRollService(Arrays.asList(arrayOfEmps));
+		long entries = employeePayRollService.countEntries(IOService.REST_IO);
+		Assert.assertEquals(2, entries);
+	}
+
+	public EmployeePayRoll[] getEmployeeList() {
+        Response response =  RestAssured.get("/Employee");
+	    System.out.println("Employee payroll entries in JSON Server : \n " +response.asString());
+	    EmployeePayRoll[] arrayOfEmps = new Gson().fromJson(response.asString(), EmployeePayRoll[].class);
+		return arrayOfEmps;
 	}
 	
 	
