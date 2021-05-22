@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import JavaFileIO.EmployeePayRollService.IOService;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 public class EmployeePayRollServiceTest {
 
@@ -95,5 +96,29 @@ public class EmployeePayRollServiceTest {
 		return arrayOfEmps;
 	}
 	
-	
+	@Test
+	public void givenNewEmployee_WhenAdded_ShouldMatch201ResponseAndCount() {
+		EmployeePayRollService employeePayRollService;
+		EmployeePayRoll[] arrayOfEmps = getEmployeeList();
+		employeePayRollService= new EmployeePayRollService(Arrays.asList(arrayOfEmps));
+		
+		EmployeePayRoll employeePayRoll = new EmployeePayRoll(0, "MArk", 3000.00, LocalDate.now());
+		Response response = addEmployeeToJsonServer(employeePayRoll);
+		int statusCode = response.getStatusCode();
+		Assert.assertEquals(201, statusCode);
+		
+		employeePayRoll = new Gson().fromJson(response.asString(), EmployeePayRoll.class);
+		employeePayRollService.addEmployeeToPayRoll(employeePayRoll, IOService.REST_IO);
+		long entries = employeePayRollService.countEntries(IOService.REST_IO);
+		Assert.assertEquals(3, entries);
+	}
+
+	public Response addEmployeeToJsonServer(EmployeePayRoll employeePayRoll) {
+		String empJson = new Gson().toJson(employeePayRoll);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type", "application/json");
+		request.body(empJson);
+		return request.post("/Employee");
+		
+	}
 }

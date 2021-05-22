@@ -92,5 +92,12 @@ public class EmployeePayRollService {
 	public long countEntries(IOService ioService) {
 		return employeePayrollList.size();
 	}
+
+	public void addEmployeeToPayRoll(EmployeePayRoll employeePayRoll, IOService ioService) {
+	if(ioService.equals(IOService.DB_IO))
+		this.addEmployeeToPayRoll(employeePayRoll.name, employeePayRoll.salary,employeePayRoll.startDate, employeePayRoll.gender);
+	else employeePayrollList.add(employeePayRoll);
+		
+	}
 	
 }
